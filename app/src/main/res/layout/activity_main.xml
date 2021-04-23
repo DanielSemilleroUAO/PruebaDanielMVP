@@ -14,6 +14,7 @@
     </include>
 
     <ProgressBar
+        android:visibility="gone"
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
@@ -21,24 +22,38 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"/>
 
-
-
-    <LinearLayout
-        android:visibility="gone"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
         android:layout_below="@id/Appbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/llMovies"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
+        <LinearLayout
+            android:visibility="visible"
+            android:layout_below="@id/Appbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginRight="5dp"
-            android:layout_marginLeft="5dp"
-            android:id="@+id/rvMovies">
-        </androidx.recyclerview.widget.RecyclerView>
+            android:id="@+id/llMovies"
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:visibility="visible"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"
+                android:id="@+id/rvMovies">
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <include
+                layout="@layout/cardview_no_movies">
+            </include>
+
+        </LinearLayout>
+
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
 
 </RelativeLayout>

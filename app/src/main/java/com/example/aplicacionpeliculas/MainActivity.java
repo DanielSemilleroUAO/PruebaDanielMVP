@@ -1,9 +1,11 @@
 package com.example.aplicacionpeliculas;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
 import android.view.View;
@@ -31,7 +33,9 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvMovies;
     private LinearLayout llMovies;
     private TextView tvTitleAppBar;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar progressBar;
+    private CardView cvNoMovies;
     private ArrayList<Movie> movies = new ArrayList<>();
     private User user = new User();
 
@@ -44,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
         llMovies = (LinearLayout) findViewById(R.id.llMovies);
         tvTitleAppBar = (TextView) findViewById(R.id.tvtoolbar_titulo);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
+        cvNoMovies = (CardView) findViewById(R.id.cvNoMovies);
 
         movies = user.getMovies();
         if(movies.isEmpty()){
@@ -51,6 +57,17 @@ public class MainActivity extends AppCompatActivity {
         }else {
             CreateMovies();
         }
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                GetMovies();
+                rvMovies.setVisibility(View.VISIBLE);
+                cvNoMovies.setVisibility(View.GONE);
+                swipeRefreshLayout.setNestedScrollingEnabled(false);
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
     }
 
@@ -81,6 +98,10 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     default:
                         Toast.makeText(getBaseContext(),"Error to load movies",Toast.LENGTH_LONG).show();
+                        progressBar.setVisibility(View.GONE);
+                        llMovies.setVisibility(View.VISIBLE);
+                        rvMovies.setVisibility(View.GONE);
+                        cvNoMovies.setVisibility(View.VISIBLE);
                         break;
                 }
             }
@@ -88,6 +109,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<MoviesTrendingsResponse> call, Throwable t) {
                 Toast.makeText(getBaseContext(),"Failed to load movies",Toast.LENGTH_LONG).show();
+                progressBar.setVisibility(View.GONE);
+                llMovies.setVisibility(View.VISIBLE);
+                rvMovies.setVisibility(View.GONE);
+                cvNoMovies.setVisibility(View.VISIBLE);
             }
         });
     }
