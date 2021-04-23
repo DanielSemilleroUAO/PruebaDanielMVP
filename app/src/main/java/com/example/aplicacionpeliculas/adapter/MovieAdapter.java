@@ -67,7 +67,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         try {
             Picasso.with(activity)
                     .load("https://image.tmdb.org/t/p/original"+movieCurrent.getPoster_path())
-                    .placeholder(R.drawable.ic_launcher_background)
+                    .placeholder(R.mipmap.ic_no_imagen)
                     .transform(transformation)
                     .into(holder.imgMovie);
         }catch (Exception e){

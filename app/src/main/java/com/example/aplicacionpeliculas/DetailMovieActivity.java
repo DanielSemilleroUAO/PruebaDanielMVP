@@ -64,7 +64,7 @@ public class DetailMovieActivity extends AppCompatActivity {
             imgMovieBackground.setScaleType(ImageView.ScaleType.CENTER_CROP);
             Picasso.with(DetailMovieActivity.this)
                     .load("https://image.tmdb.org/t/p/original"+backdrop)
-                    .placeholder(R.drawable.ic_launcher_background)
+                    .placeholder(R.mipmap.ic_no_imagen)
                     .transform(transformation)
                     .into(imgMovieBackground);
         }catch (Exception e){
