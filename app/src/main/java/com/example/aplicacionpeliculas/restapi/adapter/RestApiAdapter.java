@@ -42,7 +42,7 @@ public class RestApiAdapter {
                                 .build();
                         //Log.e("Headers",request.headers().toString());
                         Log.e("URL",request.toString());
-                        Log.e("Body",request.body().toString());
+                        //Log.e("Body",request.body().toString());
                         return chain.proceed(request);
                     }
                 }).build();
@@ -50,7 +50,7 @@ public class RestApiAdapter {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ConstantsRestApi.ROOT_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
-                //.client(okHttpClient)
+                .client(client)
                 .build();
 
         return retrofit.create(Endpoints.class);
