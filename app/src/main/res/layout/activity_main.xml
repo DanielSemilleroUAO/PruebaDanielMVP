@@ -14,7 +14,7 @@
     </include>
 
     <ProgressBar
-        android:visibility="gone"
+        android:visibility="visible"
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"

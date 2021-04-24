@@ -17,6 +17,8 @@ import android.widget.Toast;
 import com.example.aplicacionpeliculas.adapter.MovieAdapter;
 import com.example.aplicacionpeliculas.pojo.Movie;
 import com.example.aplicacionpeliculas.pojo.User;
+import com.example.aplicacionpeliculas.presenter.IRecyclerViewPresenter;
+import com.example.aplicacionpeliculas.presenter.RecyclerViewPresenter;
 import com.example.aplicacionpeliculas.restapi.Endpoints;
 import com.example.aplicacionpeliculas.restapi.adapter.RestApiAdapter;
 import com.example.aplicacionpeliculas.restapi.model.MoviesTrendingsResponse;
@@ -28,7 +30,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  implements IRecyclerView{
 
     private RecyclerView rvMovies;
     private LinearLayout llMovies;
@@ -36,8 +38,9 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar progressBar;
     private CardView cvNoMovies;
-    private ArrayList<Movie> movies = new ArrayList<>();
+    //private ArrayList<Movie> movies = new ArrayList<>();
     private User user = new User();
+    private IRecyclerViewPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,17 +54,12 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
         cvNoMovies = (CardView) findViewById(R.id.cvNoMovies);
 
-        movies = user.getMovies();
-        if(movies.isEmpty()){
-            GetMovies();
-        }else {
-            CreateMovies();
-        }
+        presenter = new RecyclerViewPresenter(this,getBaseContext());
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                GetMovies();
+                presenter.getMoviesPresenter();
                 rvMovies.setVisibility(View.VISIBLE);
                 cvNoMovies.setVisibility(View.GONE);
                 swipeRefreshLayout.setNestedScrollingEnabled(false);
@@ -71,50 +69,38 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void CreateMovies(){
+    @Override
+    public void generateGridLayout() {
         llMovies.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.GONE);
         GridLayoutManager llm = new GridLayoutManager(MainActivity.this,3);
         llm.setOrientation(RecyclerView.VERTICAL);
         rvMovies.setLayoutManager(llm);
+    }
+
+    @Override
+    public MovieAdapter createAdapter(ArrayList<Movie> movies) {
+        if(movies.isEmpty()){
+            progressBar.setVisibility(View.GONE);
+            llMovies.setVisibility(View.VISIBLE);
+            rvMovies.setVisibility(View.GONE);
+            cvNoMovies.setVisibility(View.VISIBLE);
+        }else {
+            progressBar.setVisibility(View.GONE);
+            llMovies.setVisibility(View.VISIBLE);
+            rvMovies.setVisibility(View.VISIBLE);
+            cvNoMovies.setVisibility(View.GONE);
+        }
         MovieAdapter movieAdapter = new MovieAdapter(movies,MainActivity.this);
+        return movieAdapter;
+    }
+
+    @Override
+    public void inicializateAdapterMovies(MovieAdapter movieAdapter) {
         rvMovies.setAdapter(movieAdapter);
     }
 
-    private void GetMovies(){
-        RestApiAdapter restApiAdapter = new RestApiAdapter();
-        Gson gsonMoviesTrending = restApiAdapter.DeserialerMoviesTrending();
-        Endpoints endpointsApi = restApiAdapter.RestApi(gsonMoviesTrending);
-
-        Call<MoviesTrendingsResponse> moviesTrendingsResponseCall = endpointsApi.GetMovies("movie","week");
-        moviesTrendingsResponseCall.enqueue(new Callback<MoviesTrendingsResponse>() {
-            @Override
-            public void onResponse(Call<MoviesTrendingsResponse> call, Response<MoviesTrendingsResponse> response) {
-                switch (response.code()){
-                    case 200:
-                        MoviesTrendingsResponse moviesTrendingsResponse = response.body();
-                        movies = moviesTrendingsResponse.getMovies();
-                        CreateMovies();
-                        break;
-                    default:
-                        Toast.makeText(getBaseContext(),"Error to load movies",Toast.LENGTH_LONG).show();
-                        progressBar.setVisibility(View.GONE);
-                        llMovies.setVisibility(View.VISIBLE);
-                        rvMovies.setVisibility(View.GONE);
-                        cvNoMovies.setVisibility(View.VISIBLE);
-                        break;
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MoviesTrendingsResponse> call, Throwable t) {
-                Toast.makeText(getBaseContext(),"Failed to load movies",Toast.LENGTH_LONG).show();
-                progressBar.setVisibility(View.GONE);
-                llMovies.setVisibility(View.VISIBLE);
-                rvMovies.setVisibility(View.GONE);
-                cvNoMovies.setVisibility(View.VISIBLE);
-            }
-        });
+    @Override
+    public void refreshMovies() {
     }
 
 
